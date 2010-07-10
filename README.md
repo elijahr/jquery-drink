@@ -9,17 +9,21 @@ Examples
 	<script src="jquery.drink.js"></script>
 	<script>
 
+	$('.foo')
+		.drink(function(){
+			// this function is called on any current or future .foo elements
+			$(this).text('bar');
+		})
+		.drink('click', function(event){
+			// this attaches a click event handler to any current or future .foo elements
+			alert('baz');
+		});
+
+	// on dom ready, we insert a new element that will match our .foo selector
 	$(function(){
 
-		$('.foo')
-			.drink(function(){
-				$(this).text('bar');
-			})
-			.drink('click', function(event){
-				alert('baz');
-			});
-
 		$(document.body).append('<div class="foo"></div>');
+
 	});
 
 	</script>
@@ -35,6 +39,12 @@ Issues?
 -------
 
 Please submit bugs or feature requests using the issue tracker on [github](http://github.com/elijahr/jquery-drink/issues).
+
+
+Developers
+----------
+
+
 
 
 Credits
