@@ -39,12 +39,6 @@ Issues?
 Please submit bugs or feature requests using the issue tracker on [github](http://github.com/elijahr/jquery-drink/issues).
 
 
-Developers
-----------
-
-
-
-
 Credits
 -------
 
