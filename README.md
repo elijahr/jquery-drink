@@ -1,7 +1,9 @@
-[jQuery Drink](http://github.com/elijahr/jquery-drink)
-================================
+jQuery Drink
+=====================================================
 
 Attach event handlers to DOM elements before they exist.
+
+Homepage: <http://github.com/elijahr/jquery-drink>
 
 Examples
 --------
@@ -32,14 +34,12 @@ Questions?
 
 Please feel free to [contact the author](mailto:elijahr+jquerydrink@gmail.com) with questions.
 
-
 Issues?
 -------
 
 Please submit bugs or feature requests using the issue tracker on [github](http://github.com/elijahr/jquery-drink/issues).
 
-
 Credits
 -------
 
-Thanks to Brandon Aaron for creating the [Live Query](http://plugins.jquery.com/project/livequery) plugin which is the inspiration for Drink.
+Thanks to Brandon Aaron for creating the awesome [Live Query](http://plugins.jquery.com/project/livequery) plugin which is the inspiration for Drink.
