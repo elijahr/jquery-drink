@@ -33,7 +33,6 @@
 		remove_query: function(context, selector, action, args){
 			var i, len;
 			i = 0;
-
 			len = this.queries.length;
 
 			while (i<len) {
@@ -64,7 +63,6 @@
 				$elems[query[ACTION]].apply($elems, query[ARGS]);
 				i++;
 			}
-			$drink.trigger('done');
 		},
 		start: function(){
 			if ($.drink.on) {
@@ -77,6 +75,7 @@
 			$.fn.html = $.drink.drunk_callback($.fn._html);
 
 			$drink = $($.drink).bind('go.main', $.drink.go);
+
 			$.drink.on = true;
 		},
 		dom_manip: function(){
@@ -108,7 +107,7 @@
 			}
 			$.fn.domManip = $.fn._domManip;
 			$.fn.html = $.fn._html;
-			$drink.unbind('go.main');
+			$drink.unbind('.main');
 			$.drink.on = false;
 		},
 		on: false,
