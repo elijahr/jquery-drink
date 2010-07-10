@@ -2,7 +2,7 @@
 /*!
  * jQuery Drink
  *
- * Attach event handlers to DOM elements before they exist.  Like Live Query but smaller. 
+ * Attach event handlers to DOM elements before they exist. 
  * Requires jQuery 1.4 or later
  *
  * http://github.com/elijahr/jquery-drink
@@ -88,7 +88,6 @@
 				$drink.trigger('go')
 				return return_val;
 			} : callback;
- * Requires jQuery 1.4 or later
 		},
 		drink: function($elem, event_type, handler){
 			return $.drink.change('add_query', $elem, event_type, handler)
