@@ -19,11 +19,9 @@ Examples
 			alert('baz');
 		});
 
-	// on dom ready, we insert a new element that will match our .foo selector
 	$(function(){
-
+		// on dom ready, we insert a new element that will match our .foo selector
 		$(document.body).append('<div class="foo"></div>');
-
 	});
 
 	</script>
