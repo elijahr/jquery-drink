@@ -37,7 +37,10 @@
 
 			while (i<len) {
 				query = this.queries[i];
-				if (query[CONTEXT] === context && query[SELECTOR] === selector && (action !== undefined ? query[ACTION] === action : true)) {
+
+				if ((context !== undefined ? query[CONTEXT] === context : true) &&
+					(selector !== undefined ? query[SELECTOR] === selector : true) &&
+					(action !== undefined ? query[ACTION] === action : true)) {
 					this.queries.splice(i, 1);
 					len--;
 				} else {
@@ -113,15 +116,18 @@
 		on: false,
 		id: 0,
 		change: function(method, $elem){
-			var callback, event_type, handler;
+			var callback, event_type, handler, action, args;
 			if (arguments[2] instanceof Function) {
 				callback = arguments[2];
-				$.drink[method]($elem.context, $elem.selector, 'each', [callback]);
+				action = 'each';
+				args = [callback];
 			} else {
 				event_type = arguments[2];
 				handler = arguments[3];
-				$.drink[method]($elem.context, $elem.selector, 'bind', [event_type, handler]);
+				action = method === 'remove_query' ? undefined : 'bind';
+				args = [event_type, handler];
 			}
+			$.drink[method]($elem.context, $elem.selector, action, args);
 		}
 	};
 
