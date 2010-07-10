@@ -2,8 +2,6 @@
 /*!
  * jQuery Drink
  *
- * version 1.0
- *
  * Attach event handlers to DOM elements before they exist. 
  * Requires jQuery 1.4 or later
  *
@@ -11,63 +9,63 @@
  *
  * Copyright 2010, Elijah Rutschman
  * Dual licensed under the MIT
- * (http://www.opensource.org/licenses/mit-license.php)$(function(){
-
+ * (http://www.opensource.org/licenses/mit-license.php)
  * or GPL Version 2
  * (http://www.opensource.org/licenses/gpl-license.php)
  * licenses.
  *
  */
 
-(function($){
+(function ($) {
 
-	var $drink, CONTEXT=0, SELECTOR=1, ACTION=2, ARGS=3, ID=4;
+	var $drink, CONTEXT = 0, SELECTOR = 1, ACTION = 2, ARGS = 3, ID = 4;
 
 	$.drink = {
-		add_query: function(/*context, selector, action, args*/){
+		add_query: function (/*context, selector, action, args*/) {
 			var query;
 			query = Array.prototype.slice.call(arguments, 0);
-			query[ID] = $.drink.id++;
+			query[ID] = $.drink.id;
+			$.drink.id += 1;
 			$.drink.queries.push(query);
 		},
-		remove_query: function(context, selector, action, args){
-			var i, len;
+		remove_query: function (context, selector, action, args) {
+			var i, len, query;
 			i = 0;
 			len = this.queries.length;
 
-			while (i<len) {
+			while (i < len) {
 				query = this.queries[i];
 
 				if ((context !== undefined ? query[CONTEXT] === context : true) &&
 					(selector !== undefined ? query[SELECTOR] === selector : true) &&
 					(action !== undefined ? query[ACTION] === action : true)) {
 					this.queries.splice(i, 1);
-					len--;
+					len -= 1;
 				} else {
-					i++;
+					i += 1;
 				}
 			}
 		},
 		queries: [],
-		go: function(){
+		go: function () {
 			var i, len, query, varname, filter, $elems;	
 			i = 0;
 			len = this.queries.length;
-			filter = function(varname){
-				return function(){
+			filter = function (varname) {
+				return function () {
 					return ! $(this).data(varname);
 				};
 			};
-			while (i<len) {
+			while (i < len) {
 				query = this.queries[i];
-				varname = 'drink-'+query[ID];
+				varname = 'drink-' + query[ID];
 				$elems = $(query[CONTEXT]).find(query[SELECTOR]).filter(filter(varname));
 				$elems.data(varname, true);
 				$elems[query[ACTION]].apply($elems, query[ARGS]);
-				i++;
+				i += 1;
 			}
 		},
-		start: function(){
+		start: function () {
 			if ($.drink.on) {
 				return;
 			}
@@ -81,7 +79,7 @@
 
 			$.drink.on = true;
 		},
-		dom_manip: function(){
+		dom_manip: function () {
 			var callback, drink_callback, dom_manip_args;
 			callback = arguments[2];
 			drink_callback = $.drink.drunk_callback(callback);
@@ -89,22 +87,22 @@
 			dom_manip_args.splice(2, 1, drink_callback);
 			return $.fn._domManip.apply(this, dom_manip_args);
 		},
-		drunk_callback: function(callback){
-			return callback ? function(){
+		drunk_callback: function (callback) {
+			return callback ? function () {
 				var return_val;
 				return_val = callback.apply(this, arguments);
 				$drink.trigger('go');
 				return return_val;
 			} : callback;
 		},
-		drink: function($elem, event_type, handler){
+		drink: function ($elem, event_type, handler) {
 			$.drink.change('add_query', $elem, event_type, handler);
-			$drink.trigger('go')
+			$drink.trigger('go');
 		},
-		eat: function($elem, event_type, handler){
+		eat: function ($elem, event_type, handler) {
 			$.drink.change('remove_query', $elem, event_type, handler);
 		},
-		stop: function(){
+		stop: function () {
 			if (! $.drink.on) {
 				return;
 			}
@@ -115,7 +113,7 @@
 		},
 		on: false,
 		id: 0,
-		change: function(method, $elem){
+		change: function (method, $elem) {
 			var callback, event_type, handler, action, args;
 			if (arguments[2] instanceof Function) {
 				callback = arguments[2];
@@ -132,11 +130,11 @@
 	};
 
 	$.extend($.fn, {
-		drink: function(event_type, handler){
+		drink: function (event_type, handler) {
 			$.drink.drink(this, event_type, handler);
 			return this;
 		},
-		eat: function(event_type, handler){
+		eat: function (event_type, handler) {
 			$.drink.eat(this, event_type, handler);
 			return this;
 		}
