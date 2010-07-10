@@ -96,7 +96,8 @@
 			} : callback;
 		},
 		drink: function($elem, event_type, handler){
-			return $.drink.change('add_query', $elem, event_type, handler);
+			$.drink.change('add_query', $elem, event_type, handler);
+			$drink.trigger('go')
 		},
 		eat: function($elem, event_type, handler){
 			$.drink.change('remove_query', $elem, event_type, handler);
