@@ -13,13 +13,14 @@ Examples
 
 		$('.foo')
 			.drink(function(){
-				$(this).text('bar')
+				$(this).text('bar');
 			})
 			.drink('click', function(event){
-				alert('baz')
-			})
+				alert('baz');
+			});
 
-	})
+		$(document.body).append('<div class="foo"></div>');
+	});
 
 	</script>
 

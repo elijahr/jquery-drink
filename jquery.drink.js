@@ -2,6 +2,8 @@
 /*!
  * jQuery Drink
  *
+ * version 1.0
+ *
  * Attach event handlers to DOM elements before they exist. 
  * Requires jQuery 1.4 or later
  *
@@ -9,11 +11,12 @@
  *
  * Copyright 2010, Elijah Rutschman
  * Dual licensed under the MIT
- * (http://www.opensource.org/licenses/mit-license.php)
+ * (http://www.opensource.org/licenses/mit-license.php)$(function(){
+
  * or GPL Version 2
  * (http://www.opensource.org/licenses/gpl-license.php)
  * licenses.
- * 
+ *
  */
 
 (function($){
@@ -25,11 +28,11 @@
 			var query;
 			query = Array.prototype.slice.call(arguments, 0);
 			query[ID] = $.drink.id++;
-			$.drink.queries.push(query);$drink
+			$.drink.queries.push(query);
 		},
 		remove_query: function(context, selector, action, args){
 			var i, len;
-			i = 0;	$.drink.start()
+			i = 0;
 
 			len = this.queries.length;
 
@@ -47,58 +50,61 @@
 		go: function(){
 			var i, len, query, varname, filter, $elems;	
 			i = 0;
-			len = this.queries.length
-			for (; i<len; i++) {
+			len = this.queries.length;
+			filter = function(varname){
+				return function(){
+					return ! $(this).data(varname);
+				};
+			};
+			while (i<len) {
 				query = this.queries[i];
 				varname = 'drink-'+query[ID];
-				filter = function(){
-					return ! $(this).data(varname)
-				}
-				$elems = $(query[CONTEXT]).find(query[SELECTOR]).filter(filter);
-				$elems.data(varname, true)
+				$elems = $(query[CONTEXT]).find(query[SELECTOR]).filter(filter(varname));
+				$elems.data(varname, true);
 				$elems[query[ACTION]].apply($elems, query[ARGS]);
+				i++;
 			}
-			$drink.trigger('done')
+			$drink.trigger('done');
 		},
 		start: function(){
-			if ($.drink.on)
-				return
-
+			if ($.drink.on) {
+				return;
+			}
 			$.fn._domManip = $.fn.domManip;
 			$.fn.domManip = $.drink.dom_manip;
 
 			$.fn._html = $.fn.html;
-			$.fn.html = $.drink.drunk_callback($.fn._html)
+			$.fn.html = $.drink.drunk_callback($.fn._html);
 
 			$drink = $($.drink).bind('go.main', $.drink.go);
 			$.drink.on = true;
 		},
 		dom_manip: function(){
 			var callback, drink_callback, dom_manip_args;
-			callback = arguments[2]
+			callback = arguments[2];
 			drink_callback = $.drink.drunk_callback(callback);
 			dom_manip_args = Array.prototype.slice.call(arguments, 0);
 			dom_manip_args.splice(2, 1, drink_callback);
-			return $.fn._domManip.apply(this, dom_manip_args)
+			return $.fn._domManip.apply(this, dom_manip_args);
 		},
 		drunk_callback: function(callback){
 			return callback ? function(){
 				var return_val;
 				return_val = callback.apply(this, arguments);
-				$drink.trigger('go')
+				$drink.trigger('go');
 				return return_val;
 			} : callback;
 		},
 		drink: function($elem, event_type, handler){
-			return $.drink.change('add_query', $elem, event_type, handler)
+			return $.drink.change('add_query', $elem, event_type, handler);
 		},
-		eat: function(event_type, handler){
-			return $.drink.change('remove_query', $elem, event_type, handler)
+		eat: function($elem, event_type, handler){
+			$.drink.change('remove_query', $elem, event_type, handler);
 		},
 		stop: function(){
-			if (! $.drink.on)
-				return
-
+			if (! $.drink.on) {
+				return;
+			}
 			$.fn.domManip = $.fn._domManip;
 			$.fn.html = $.fn._html;
 			$drink.unbind('go.main');
@@ -109,25 +115,27 @@
 		change: function(method, $elem){
 			var callback, event_type, handler;
 			if (arguments[2] instanceof Function) {
-				callback = arguments[2]
-				return $.drink[method]($elem.context, $elem.selector, 'each', [callback]);
+				callback = arguments[2];
+				$.drink[method]($elem.context, $elem.selector, 'each', [callback]);
 			} else {
 				event_type = arguments[2];
 				handler = arguments[3];
-				return $.drink[method]($elem.context, $elem.selector, 'bind', [event_type, handler]);
+				$.drink[method]($elem.context, $elem.selector, 'bind', [event_type, handler]);
 			}
 		}
-	}
+	};
 
 	$.extend($.fn, {
 		drink: function(event_type, handler){
-			return $.drink.drink(this, event_type, handler)
+			$.drink.drink(this, event_type, handler);
+			return this;
 		},
 		eat: function(event_type, handler){
-			return $.drink.eat(this, event_type, handler)
+			$.drink.eat(this, event_type, handler);
+			return this;
 		}
-	})
+	});
 
-	$.drink.start()
+	$.drink.start();
 
-})(jQuery)
+})(jQuery);
