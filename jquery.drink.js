@@ -28,16 +28,25 @@
 			$.drink.queries.push(query);
 		},
 		remove_query: function (context, selector, action, args) {
-			var i, len, query;
+			var i, len, q;
 			i = 0;
 			len = this.queries.length;
 
 			while (i < len) {
-				query = this.queries[i];
-
-				if ((context !== undefined ? query[CONTEXT] === context : true) &&
-					(selector !== undefined ? query[SELECTOR] === selector : true) &&
-					(action !== undefined ? query[ACTION] === action : true)) {
+				q = this.queries[i];
+				// remove this query if any of the following are true:
+				//		the context + selector match
+				//		the context matches and there is no selector
+				//		the selector matches and there is no context
+				//		AND
+				//		either the action is undefined or the action is a match
+				//		AND
+				//		either the args are undefined or the args are a match
+ 
+				if (context ? context === q[CONTEXT] : true &&
+					selector ? selector === q[SELECTOR] : true &&
+					( !action || action === q[ACTION]) &&
+					( !args || equivalent(args, q[ARGS]))) {
 					this.queries.splice(i, 1);
 					len -= 1;
 				} else {
@@ -47,20 +56,24 @@
 		},
 		queries: [],
 		go: function () {
-			var i, len, query, varname, filter, $elems;	
+			var i, len, query, varname, $elems;	
 			i = 0;
 			len = this.queries.length;
-			filter = function (varname) {
-				return function () {
-					return ! $(this).data(varname);
-				};
-			};
 			while (i < len) {
+				// cycle through the queries and trigger the action on domready
+				// if dom is already ready, the action is triggered immediately
 				query = this.queries[i];
-				varname = 'drink-' + query[ID];
-				$elems = $(query[CONTEXT]).find(query[SELECTOR]).filter(filter(varname));
-				$elems.data(varname, true);
-				$elems[query[ACTION]].apply($elems, query[ARGS]);
+				varname = 'drink_' + query[ID] + '_applied';
+
+				$(document).bind('ready', function(){
+					$elems = $(query[CONTEXT])
+					if (query[SELECTOR]) {
+						$elems = $elems.find(query[SELECTOR])
+					}
+					$elems = $elems.filter(filter(varname));
+					$elems.data(varname, true);
+					$elems[query[ACTION]].apply($elems, query[ARGS]);
+				})
 				i += 1;
 			}
 		},
@@ -94,12 +107,12 @@
 				return return_val;
 			} : callback;
 		},
-		drink: function ($elem, event_type, handler) {
-			$.drink.change('add_query', $elem, event_type, handler);
+		drink: function () {
+			parse_query_args_and_call.apply($.drink.add_query, arguments);
 			$drink.trigger('go');
 		},
-		eat: function ($elem, event_type, handler) {
-			$.drink.change('remove_query', $elem, event_type, handler);
+		eat: function () {
+			parse_query_args_and_call.apply($.drink.remove_query, arguments);
 		},
 		stop: function () {
 			if (! $.drink.on) {
@@ -111,30 +124,60 @@
 			$.drink.on = false;
 		},
 		on: false,
-		id: 0,
-		change: function (method, $elem) {
-			var callback, event_type, handler, action, args;
-			if (arguments[2] instanceof Function) {
-				callback = arguments[2];
-				action = 'each';
-				args = [callback];
-			} else {
-				event_type = arguments[2];
-				handler = arguments[3];
-				action = method === 'remove_query' ? undefined : 'bind';
-				args = [event_type, handler];
-			}
-			$.drink[method]($elem.context, $elem.selector, action, args);
-		}
+		id: 0
 	};
 
+	// miscellaneous private helper functions
+	function filter(varname) {
+		// build a filter function to remove elements that have
+		// already been used by the query that varname represents
+		return function () {
+			return ! $(this).data(varname);
+		};
+	};
+
+	function parse_query_args_and_call($elem, callback_or_event_name, handler) {
+		var callback, event_name, handler, action, args;
+		if ($.isFunction(callback_or_event_name)) {
+			// a callback for the jQuery.each method was passed in
+			callback = callback_or_event_name;
+			action = 'each';
+			args = [callback];
+		} else {
+			// an event name and event handler were passed in
+			event_name = callback_or_event_name;
+			if (this === $.drink.remove_query) {
+				// action can be undefined if we're removing a query, thats ok
+			} else {
+				action = 'bind';
+			}
+			args = [event_name, handler];
+		}
+		this($elem.context, $elem.selector, action, args);
+	}
+
+	function equivalent(array1, array2){
+		var i=0, len1=array1.length, len2=array2.length;
+		if (len1 != len2) {
+			return false;
+		}
+
+		while (i < len1) {
+			if (array1[i] !== array2[i]) {
+				return false;
+			}
+			i += 1;
+		}
+		return true;
+	}
+
 	$.extend($.fn, {
-		drink: function (event_type, handler) {
-			$.drink.drink(this, event_type, handler);
+		drink: function (callback_or_event_name, handler) {
+			$.drink.drink(this, callback_or_event_name, handler);
 			return this;
 		},
-		eat: function (event_type, handler) {
-			$.drink.eat(this, event_type, handler);
+		eat: function (callback_or_event_name, handler) {
+			$.drink.eat(this, callback_or_event_name, handler);
 			return this;
 		}
 	});
