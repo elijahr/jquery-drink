@@ -24,6 +24,11 @@ Examples
 	$(function(){
 		// on dom ready, we insert a new element that will match our .foo selector
 		$(document.body).append('<div class="foo"></div>');
+
+
+		// here's how we can remove this drink
+		$('.foo').eat('click');
+
 	});
 
 	</script>
