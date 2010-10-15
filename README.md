@@ -11,11 +11,13 @@ Examples
 	<script src="jquery.drink.js"></script>
 	<script>
 
+	function barify() {
+		// this function is called on any current or future .foo elements
+		$(this).text('bar');
+	}
+
 	$('.foo')
-		.drink(function(){
-			// this function is called on any current or future .foo elements
-			$(this).text('bar');
-		})
+		.drink(barify)
 		.drink('click', function(event){
 			// this attaches a click event handler to any current or future .foo elements
 			alert('baz');
@@ -26,8 +28,14 @@ Examples
 		$(document.body).append('<div class="foo"></div>');
 
 
-		// here's how we can remove this drink
+		// here's how we can remove the barify drink
+		$('.foo').eat(barify);
+
+		// here's how we can remove the click drink
 		$('.foo').eat('click');
+
+		// here's how we can remove all drinks
+		$('.foo').eat();
 
 	});
 
